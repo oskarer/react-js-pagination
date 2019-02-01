@@ -6,7 +6,7 @@ export default class Page extends Component {
     static propTypes = {
         pageText: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
         pageNumber: PropTypes.number.isRequired,
-        onClick: PropTypes.func.isRequired,
+        onClick: PropTypes.func,
         isActive: PropTypes.bool.isRequired,
         isDisabled: PropTypes.bool,
         activeClass: PropTypes.string,
@@ -14,10 +14,13 @@ export default class Page extends Component {
         itemClass: PropTypes.string,
         linkClass: PropTypes.string,
         disabledClass: PropTypes.string,
-        href: PropTypes.string
+        href: PropTypes.string,
+        linkElement: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+        linkProps: PropTypes.object.isRequired,
     };
 
     static defaultProps = {
+        onClick: undefined,
         activeClass: "active",
         disabledClass: "disabled",
         itemClass: undefined,
@@ -29,12 +32,14 @@ export default class Page extends Component {
     };
 
     handleClick(e) {
-        const { isDisabled, pageNumber } = this.props;
-        e.preventDefault();
-        if (isDisabled) {
+        const { isDisabled, pageNumber, onClick } = this.props;
+        if (onClick) {
+          e.preventDefault();
+          if (isDisabled) {
             return;
+          }
+          onClick(pageNumber);
         }
-        this.props.onClick(pageNumber);
     }
 
     render() {
@@ -48,7 +53,9 @@ export default class Page extends Component {
             disabledClass,
             isActive,
             isDisabled,
-            href
+            href,
+            linkElement,
+            linkProps,
         } = this.props;
 
         const css = cx(itemClass, {
@@ -62,9 +69,11 @@ export default class Page extends Component {
 
         return (
             <li className={css} onClick={::this.handleClick}>
-                <a className={linkCss} href={href}>
-                    {pageText}
-                </a>
+              {React.createElement(
+                linkElement,
+                Object.assign({}, linkProps, { className: linkCss }),
+                pageText,
+              )}
             </li>
         );
     }

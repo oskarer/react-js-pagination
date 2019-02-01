@@ -7,7 +7,7 @@ import cx from "classnames";
 export default class Pagination extends React.Component {
   static propTypes = {
     totalItemsCount: PropTypes.number.isRequired,
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
     activePage: PropTypes.number,
     itemsCountPerPage: PropTypes.number,
     pageRangeDisplayed: PropTypes.number,
@@ -24,6 +24,8 @@ export default class Pagination extends React.Component {
     itemClassPrev: PropTypes.string,
     itemClassNext: PropTypes.string,
     itemClassLast: PropTypes.string,
+    getLinkElement: PropTypes.func,
+    getLinkProps: PropTypes.func,
     linkClass: PropTypes.string,
     activeClass: PropTypes.string,
     activeLinkClass: PropTypes.string,
@@ -32,10 +34,11 @@ export default class Pagination extends React.Component {
     linkClassNext: PropTypes.string,
     linkClassLast: PropTypes.string,
     hideFirstLastPages: PropTypes.bool,
-    getPageUrl: PropTypes.func
+    getPageUrl: PropTypes.func,
   };
 
   static defaultProps = {
+    onChange: undefined,
     itemsCountPerPage: 10,
     pageRangeDisplayed: 5,
     activePage: 1,
@@ -48,7 +51,9 @@ export default class Pagination extends React.Component {
     linkClass: undefined,
     activeLinkClass: undefined,
     hideFirstLastPages: false,
-    getPageUrl: (i) => "#"
+    getPageUrl: (i) => "#",
+    getLinkElement: () => "a",
+    getLinkProps: () => ({ href: "#" }),
   };
 
   isFirstPageVisible(has_previous_page) {
@@ -103,7 +108,9 @@ export default class Pagination extends React.Component {
       linkClassNext,
       linkClassLast,
       hideFirstLastPages,
-      getPageUrl
+      getPageUrl,
+      getLinkElement,
+      getLinkProps
     } = this.props;
 
     const paginationInfo = new paginator(
@@ -121,6 +128,8 @@ export default class Pagination extends React.Component {
           isActive={i === activePage}
           key={i}
           href={getPageUrl(i)}
+          linkElement={getLinkElement(i)}
+          linkProps={getLinkProps(i)}
           pageNumber={i}
           pageText={i + ""}
           onClick={onChange}
@@ -137,6 +146,8 @@ export default class Pagination extends React.Component {
         <Page
           key={"prev" + paginationInfo.previous_page}
           href={getPageUrl(paginationInfo.previous_page)}
+          linkElement={getLinkElement(paginationInfo.previous_page)}
+          linkProps={getLinkProps(paginationInfo.previous_page)}
           pageNumber={paginationInfo.previous_page}
           onClick={onChange}
           pageText={prevPageText}
@@ -152,6 +163,8 @@ export default class Pagination extends React.Component {
         <Page
           key={"first"}
           href={getPageUrl(1)}
+          linkElement={getLinkElement(1)}
+          linkProps={getLinkProps(1)}
           pageNumber={1}
           onClick={onChange}
           pageText={firstPageText}
@@ -167,6 +180,8 @@ export default class Pagination extends React.Component {
         <Page
           key={"next" + paginationInfo.next_page}
           href={getPageUrl(paginationInfo.next_page)}
+          linkElement={getLinkElement(paginationInfo.next_page)}
+          linkProps={getLinkProps(paginationInfo.next_page)}
           pageNumber={paginationInfo.next_page}
           onClick={onChange}
           pageText={nextPageText}
@@ -182,6 +197,8 @@ export default class Pagination extends React.Component {
         <Page
           key={"last"}
           href={getPageUrl(paginationInfo.total_pages)}
+          linkElement={getLinkElement(paginationInfo.total_pages)}
+          linkProps={getLinkProps(paginationInfo.total_pages)}
           pageNumber={paginationInfo.total_pages}
           onClick={onChange}
           pageText={lastPageText}
